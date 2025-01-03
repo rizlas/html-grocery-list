@@ -34,10 +34,17 @@ body {
 
 .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--min-column-width), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(var(--min-column-width), 1fr));
     gap: 20px;
     width: 90%;
     padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .gallery {
+        margin: auto;
+        place-items: center;
+    }
 }
 
 .card {
