@@ -6,6 +6,7 @@
     <title>Searchable Gallery</title>
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
     <div class="logo">
@@ -18,17 +19,25 @@
 
     <script>
         /**
-         * Fetches data from the remote API.
-         * @returns {Promise<Array>} An array of items fetched from the API.
+         * Fetches and parses data from a CSV file in a remote API.
+         * @returns {Promise<Array>} An array of items parsed from the CSV file.
          */
         async function fetchData() {
             try {
-                const gistResponse = await fetch('https://api.github.com/gists/59efb8e8ddb34fd6f7f1f39cbba1b832');
+                const gistResponse = await fetch('https://api.github.com/gists/e9befc8c5f82912be9bbb7e51eb0e21d');
                 const gistData = await gistResponse.json();
-                const rawUrl = gistData.files["test_data.json"].raw_url;
+                const rawUrl = gistData.files["test_data.csv"].raw_url;
 
                 const rawResponse = await fetch(rawUrl);
-                return await rawResponse.json(); // Returns parsed JSON data
+                const csvText = await rawResponse.text();
+
+                // Use PapaParse to parse the CSV data
+                const parsedData = Papa.parse(csvText, {
+                    header: true, // Use the first row as header
+                    skipEmptyLines: true // Ignore empty lines
+                });
+
+                return parsedData.data; // Returns the array of parsed data
             } catch (error) {
                 console.error('Error fetching data:', error);
                 return []; // Return an empty array in case of an error
@@ -53,18 +62,22 @@
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'card';
                 const img = document.createElement('img');
-                img.src = item.image ? item.image : `https://placehold.co/150?text=${item.name}&font=roboto`;
-                img.alt = item.name; // Accessibility: Alt text for the image
+                img.src = item.immagine ? item.immagine : `https://placehold.co/200/8fa98c/white?text=${item.prodotto}&font=roboto`;
+                img.alt = item.prodotto; // Accessibility: Alt text for the image
 
                 cardDiv.appendChild(img);
 
                 const containerDiv = document.createElement('div');
                 containerDiv.className = 'container';
 
-                const name = document.createElement('p');
-                name.textContent = `${item.name} (${item.code})`; // Item name as text
+                const product = document.createElement('h4');
+                product.textContent = item.prodotto;
 
-                containerDiv.appendChild(name);
+                const productInfos = document.createElement('p');
+                productInfos.textContent = `Codice: ${item.codice}\r\nPrezzo: ${item.prezzo} (${item.iva})`;
+
+                containerDiv.appendChild(product);
+                containerDiv.appendChild(productInfos);
 
                 cardDiv.appendChild(containerDiv);
                 gallery.appendChild(cardDiv); // Add item to the gallery
@@ -77,8 +90,8 @@
         searchInput.addEventListener('input', (event) => {
             const query = event.target.value.toLowerCase(); // Convert query to lowercase
             const filteredItems = currentData.filter(item =>
-                item.name.toLowerCase().includes(query) ||
-                item.code.toLowerCase().includes(query) // Match name or code
+                item.prodotto.toLowerCase().includes(query) ||
+                item.codice.toLowerCase().includes(query) // Match name or code
             );
             displayItems(filteredItems); // Update the gallery with filtered items
         });

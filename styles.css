@@ -1,5 +1,5 @@
 :root {
-    --min-column-width: 150px;
+    --min-column-width: 200px;
     /* Adjustable minimum column width */
 }
 
@@ -23,8 +23,7 @@ body {
 
 .search-bar {
     margin: 20px;
-    width: 100%;
-    max-width: 600px;
+    width: 70%;
 }
 
 .search-bar input {
@@ -37,19 +36,18 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(var(--min-column-width), 1fr));
     gap: 20px;
-    width: 100%;
+    width: 90%;
     padding: 20px;
 }
 
 .card {
     display: flex;
+    max-width: 200px;
     flex-direction: column;
     align-items: center;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: auto;
-    margin: auto;
-    /* Centers the square when fewer items are present */
 }
 
 .card:hover {
@@ -57,13 +55,17 @@ body {
 }
 
 .card img {
-    max-height: 150px;
+    max-height: 200px;
     object-fit: cover;
     aspect-ratio: 1;
     /* Ensures the div remains square */
     border-bottom: 1px solid #ddd;
 }
 
-.container p {
+.container {
     padding: 2px 16px;
+}
+
+.container p {
+    white-space: pre-line;
 }
