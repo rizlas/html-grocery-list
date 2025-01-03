@@ -15,13 +15,14 @@
     <div class="search-bar">
         <input type="text" id="search" placeholder="Cerca prodotti...">
     </div>
+    <div class="filters">
+        <label><input type="checkbox" class="group-filter" value="fresco" checked> Fresco</label>
+        <label><input type="checkbox" class="group-filter" value="trasformati" checked> Trasformati</label>
+        <label><input type="checkbox" class="group-filter" value="esterni" checked> Esterni</label>
+    </div>
     <div class="gallery" id="gallery"></div>
 
     <script>
-        /**
-         * Fetches and parses data from a CSV file in a remote API.
-         * @returns {Promise<Array>} An array of items parsed from the CSV file.
-         */
         async function fetchData() {
             try {
                 const gistResponse = await fetch('https://api.github.com/gists/e9befc8c5f82912be9bbb7e51eb0e21d');
@@ -31,39 +32,33 @@
                 const rawResponse = await fetch(rawUrl);
                 const csvText = await rawResponse.text();
 
-                // Use PapaParse to parse the CSV data
                 const parsedData = Papa.parse(csvText, {
-                    header: true, // Use the first row as header
-                    skipEmptyLines: true // Ignore empty lines
+                    header: true,
+                    skipEmptyLines: true
                 });
 
-                return parsedData.data; // Returns the array of parsed data
+                return parsedData.data;
             } catch (error) {
                 console.error('Error fetching data:', error);
-                return []; // Return an empty array in case of an error
+                return [];
             }
         }
 
         const gallery = document.getElementById('gallery');
         const searchInput = document.getElementById('search');
+        const groupFilters = document.querySelectorAll('.group-filter');
 
-        /**
-         * Displays items in the gallery.
-         * @param {Array} items - Array of items to display.
-         */
         function displayItems(items) {
-            // Clear the gallery before displaying new items
             while (gallery.firstChild) {
                 gallery.removeChild(gallery.firstChild);
             }
 
-            // Iterate through each item and create DOM elements for it
             items.forEach(item => {
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'card';
                 const img = document.createElement('img');
                 img.src = item.immagine ? item.immagine : `https://placehold.co/200/${item.colore_sfondo || '8fa98c'}/white?text=${item.prodotto_short}&font=roboto`;
-                img.alt = item.prodotto; // Accessibility: Alt text for the image
+                img.alt = item.prodotto;
 
                 cardDiv.appendChild(img);
 
@@ -80,33 +75,35 @@
                 containerDiv.appendChild(productInfos);
 
                 cardDiv.appendChild(containerDiv);
-                gallery.appendChild(cardDiv); // Add item to the gallery
+                gallery.appendChild(cardDiv);
             });
         }
 
-        /**
-         * Filters items based on the search query and updates the gallery.
-         */
-        searchInput.addEventListener('input', (event) => {
-            const query = event.target.value.toLowerCase(); // Convert query to lowercase
+        function filterItems() {
+            const query = searchInput.value.toLowerCase();
+            const selectedGroups = Array.from(groupFilters)
+                .filter(filter => filter.checked)
+                .map(filter => filter.value);
+
             const filteredItems = currentData.filter(item =>
-                item.prodotto.toLowerCase().includes(query) ||
-                item.codice.toLowerCase().includes(query) // Match name or code
+                (item.prodotto.toLowerCase().includes(query) ||
+                 item.codice.toLowerCase().includes(query)) &&
+                selectedGroups.includes(item.gruppo.toLowerCase())
             );
-            displayItems(filteredItems); // Update the gallery with filtered items
-        });
 
-        let currentData = []; // Holds the current set of items
-
-        /**
-         * Initializes the gallery by fetching data and displaying it.
-         */
-        async function initializeGallery() {
-            currentData = await fetchData();
-            displayItems(currentData); // Display all items initially
+            displayItems(filteredItems);
         }
 
-        // Initialize gallery on page load
+        searchInput.addEventListener('input', filterItems);
+        groupFilters.forEach(filter => filter.addEventListener('change', filterItems));
+
+        let currentData = [];
+
+        async function initializeGallery() {
+            currentData = await fetchData();
+            displayItems(currentData);
+        }
+
         initializeGallery();
     </script>
 </body>
