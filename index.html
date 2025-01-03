@@ -62,7 +62,7 @@
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'card';
                 const img = document.createElement('img');
-                img.src = item.immagine ? item.immagine : `https://placehold.co/200/8fa98c/white?text=${item.prodotto_short}&font=roboto`;
+                img.src = item.immagine ? item.immagine : `https://placehold.co/200/${item.colore_sfondo || '8fa98c'}/white?text=${item.prodotto_short}&font=roboto`;
                 img.alt = item.prodotto; // Accessibility: Alt text for the image
 
                 cardDiv.appendChild(img);
