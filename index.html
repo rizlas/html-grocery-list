@@ -25,7 +25,7 @@
     <script>
         async function fetchData() {
             try {
-                const gistResponse = await fetch('https://api.github.com/gists/e9befc8c5f82912be9bbb7e51eb0e21d');
+                const gistResponse = await fetch('https://api.github.com/gists/c4f681af2a8377a78ac87889d8438a5f');
                 const gistData = await gistResponse.json();
                 const rawUrl = gistData.files["test_data.csv"].raw_url;
 
