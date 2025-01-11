@@ -76,3 +76,7 @@ body {
 .container p {
     white-space: pre-line;
 }
+
+.infos {
+    font-size: x-large;
+}

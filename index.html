@@ -65,13 +65,17 @@
                 const containerDiv = document.createElement('div');
                 containerDiv.className = 'container';
 
-                const product = document.createElement('h4');
+                const product = document.createElement('h3');
                 product.textContent = item.prodotto;
 
+                const divider = document.createElement('hr');
+
                 const productInfos = document.createElement('p');
+                productInfos.className = 'infos';
                 productInfos.textContent = `Codice: ${item.codice}\r\nPrezzo: ${item.prezzo} (${item.iva})`;
 
                 containerDiv.appendChild(product);
+                containerDiv.appendChild(divider);
                 containerDiv.appendChild(productInfos);
 
                 cardDiv.appendChild(containerDiv);
